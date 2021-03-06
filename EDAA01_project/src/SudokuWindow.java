@@ -15,25 +15,26 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 public class SudokuWindow {
-	private Container pane;			// En pane
-	private JFrame frame;			// Själva fönstret
-	private JTextField[][] grid;	// Matris med textrutor
-	private int size;				// Rutnätets storlek
-	private JButton btnSolve, btnClear;		// Knappar
-	private JPanel btnPanel, gridPanel;		// Paneler
-	private JPanel[][] squarePanels;// Stora rutornas paneler
-	private Border squareBorder;	// Stora rutornas ram
-	private Border cellBorder;		// Textrutornas ram
-	private Border gridBorder;		// Rutnätets ram
+	private Container pane;
+	private JFrame frame;
+	private JTextField[][] grid;
+	private int size;
+	private JButton btnSolve, btnClear;
+	private JPanel btnPanel, gridPanel;
+	private JPanel[][] squarePanels;
+	private Border squareBorder, cellBorder, gridBorder;
 	private SudokuBacktracker b;
 	
-	public SudokuWindow(int size, SudokuBacktracker b) {
+	public SudokuWindow(SudokuBacktracker b) {
 		this.b = b;
-		this.size = size;
+		this.size = b.getDimension();
 		grid = new JTextField[size][size];
 		SwingUtilities.invokeLater(() -> makeGUI());
 	}
-	
+	/**
+	 * Makes the entire SudokuWindow GUI and connects it to the given
+	 * SudokuBacktracker.
+	 */
 	private void makeGUI() {
 		frame = new JFrame("Sudoku");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,29 +52,27 @@ public class SudokuWindow {
 				for (int c = 0; c < size; c++) {
 					int nbr;
 					String input = grid[r][c].getText();
-					boolean isEmpty = false;
+					boolean isEmpty = input.equals("");
 					try {
-						if (!input.equals("")) {
-							nbr = Integer.parseInt(grid[r][c].getText());
-						} else {
-							isEmpty = true;
-							nbr = 0;
+						if (input.strip().equals("0")) {
+							throw new NumberFormatException();
 						}
+						nbr = Integer.parseInt(input);
 					} catch (NumberFormatException err1) {
 						nbr = 0;
-						grid[r][c].setText("");
-						showBadInputMessage();
-						errorFound = true;
-					}
-					if (!isEmpty) {
-						try {
-							b.setNumber(r, c, nbr);
-						} catch (IllegalArgumentException err2) {
-							nbr = 0;
+						if (!isEmpty) {
 							grid[r][c].setText("");
 							showBadInputMessage();
 							errorFound = true;
 						}
+					}
+					try {
+						b.setNumber(r, c, nbr);
+					} catch (IllegalArgumentException err2) {
+						nbr = 0;
+						grid[r][c].setText("");
+						showBadInputMessage();
+						errorFound = true;
 					}
 				}
 			}
@@ -85,7 +84,7 @@ public class SudokuWindow {
 		});
 		btnClear.addActionListener(e -> {
 			b.clear();
-			setMatrixText(new int[size][size]);
+			clear();
 		});
 		// Dimensioner
 		int sqDim = (int) Math.sqrt(size);
@@ -140,18 +139,42 @@ public class SudokuWindow {
 		frame.setVisible(true);
 	}
 	
+	/**
+	 * Opens a dialog window with error message saying that the given
+	 * grid is unsolvable.
+	 */
 	public void showUnsolvableMessage() {
 		JOptionPane.showMessageDialog(frame, "Det angivna sudokut är olösbart");
 	}
 	
+	/**
+	 * Opens a dialog window with error message saying that the user
+	 * has made an invalid input.
+	 */
 	public void showBadInputMessage() {
 		JOptionPane.showMessageDialog(frame, "Vänligen skriv siffror mellan 1 och " + size);
 	}
 	
+	/**
+	 * Prints the numbers onto the grid in the given matrix.
+	 * @param matrix
+	 * 				The numbers to be printed
+	 */
 	public void setMatrixText(int[][] matrix) {
 		for (int r = 0; r < size; r++) {
 			for (int c = 0; c < size; c++) {
 				grid[r][c].setText(matrix[r][c] + "");
+			}
+		}
+	}
+	
+	/**
+	 * Clears the grid.
+	 */
+	public void clear() {
+		for (int r = 0; r < size; r++) {
+			for (int c = 0; c < size; c++) {
+				grid[r][c].setText("");
 			}
 		}
 	}

@@ -1,5 +1,3 @@
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 
 public class SudokuBacktracker implements SudokuSolver {
 	private int[][] numbers;
@@ -100,11 +98,6 @@ public class SudokuBacktracker implements SudokuSolver {
 	}
 
 	private boolean solve(int r, int c) {
-		if (r>1) {
-			System.out.print(r);
-			System.out.print(" ");
-			System.out.println(c);
-		}
 		if (r == size) return true;
 		int nextRow, nextCol;
 		if (c < size-1) {
@@ -143,5 +136,10 @@ public class SudokuBacktracker implements SudokuSolver {
 	@Override
 	public void setMatrix(int[][] nbrs) {
 		numbers = nbrs;
+	}
+	
+	@Override
+	public int getDimension() {
+		return size;
 	}
 }

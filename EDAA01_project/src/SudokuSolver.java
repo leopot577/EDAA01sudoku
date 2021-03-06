@@ -30,21 +30,49 @@ public interface SudokuSolver {
 	 */
 	public int getNumber(int r, int c);
 	
-	// Tömmer rutan r,c.
-	// IllegalArgumentException om fel värde på r eller c
+	/**
+	 * Clears the cell in row r, columns c.
+	 * @param r
+	 * 			The cell's row
+	 * @param c
+	 * 			The cell's column
+	 * @throws IllegalArgumentException
+	 * 			if r or c is outside [0..getDimension()-1]
+	 */
 	public void clearNumber(int r, int c);
 	
-	// Kontrollerar om värdet nbr i rutan r,c är ok enligt reglerna.
-	// IllegalArgumentException om fel värde på r, c eller nbr
+	/**
+	 * Checks if the sudoku rules allow a given number to be put in
+	 * the cell (r,c).
+	 * @param r
+	 * 			The cell's row
+	 * @param c
+	 * 			The cell's column
+	 * @param nbr
+	 * 			The number to check against the rules
+	 * @return true if it is allowed, false if it breaks the rules
+	 * @throws IllegalArgumentException
+	 * 			if r, c or nbr are out of bounds
+	 */
 	public boolean isValid(int r, int c, int nbr);
 
-	// Kontrollerar att alla ifyllda siffrorna uppfyller reglerna.
+	/**
+	 * Checks if the entire grid complies with the sudoku rules.
+	 * Empty cells (with value 0) are allowed.
+	 * @return true if the grid is valid, false if any rules are broken
+	 */
 	public boolean isAllValid();
 		
-	// Försöker läsa sudokut och returnerar true om det var läsbart, annars false.
+	/**
+	 * Solves the sudoku and returns true if it was successfully solved.
+	 * Otherwise returns false.
+	 * @return true if the sudoku is solved, false otherwise
+	 */
 	public boolean solve();
 		
-	// Tömmer alla rutorna i sudokut
+	/**
+	 * Clears all the cells in the grid.
+	 */
 	public void clear();
 		
 	/**

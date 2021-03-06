@@ -2,6 +2,6 @@
 public class SudokuApplication {
 	public static void main(String[] args) {
 		SudokuBacktracker b = new SudokuBacktracker(9);
-		SudokuWindow w = new SudokuWindow(9, b);
+		SudokuWindow w = new SudokuWindow(b);
 	}
 }
