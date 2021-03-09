@@ -1,21 +1,24 @@
 
+
 public class SudokuBacktracker implements SudokuSolver {
 	private int[][] numbers;
 	private int sqDim;
-	private int[][] preKnown;
 	private int size;
 	
 	public SudokuBacktracker(int size) {
-		this.size = size;
+		if (size < 0) {
+			size *= -1;
+		}
+		double sqrt = Math.sqrt(size);
+		sqDim = (int) sqrt;
+		this.size = sqDim * sqDim;
 		numbers = new int[size][size];
-		preKnown = new int[size][size];
-		sqDim = (int) Math.sqrt(size);
 	}
 	
 	
 	@Override
 	public void setNumber(int r, int c, int nbr) {
-		if (nbr < 0 || nbr > size) {
+		if (nbr < 1 || nbr > size) {
 			throw new IllegalArgumentException();
 		}
 		try {
@@ -45,9 +48,10 @@ public class SudokuBacktracker implements SudokuSolver {
 
 	@Override
 	public boolean isValid(int r, int c, int nbr) {
-		if (r < 0 || c < 0 || r > size || c > size || nbr < 0 || nbr > size) {
+		if (r < 0 || c < 0 || r >= size || c >= size || nbr < 0 || nbr > size) {
 			throw new IllegalArgumentException();
 		}
+		if (nbr == 0) return true;
 		// Kolla rad
 		for (int col = 0; col < size; col++) {
 			if (nbr == numbers[r][col] && col != c) return false;
@@ -75,26 +79,13 @@ public class SudokuBacktracker implements SudokuSolver {
 		return true;
 	}
 	
-	public boolean preKnownIsAllValid() {
-		for (int r = 0; r < size; r++) {
-			for (int c = 0; c < size; c++) {
-				preKnown[r][c] = numbers[r][c];
-				if (preKnown[r][c] != 0) {
-					if (!isValid(r, c, preKnown[r][c])) return false;
-				}
-			}
-		}
-		return true;
-	}
-	
 	@Override
 	public boolean solve() {
-		if (preKnownIsAllValid()) {
-			solve(0, 0);
+		if (isAllValid()) {
+			return solve(0, 0);
 		} else {
 			return false;
 		}
-		return isAllValid();
 	}
 
 	private boolean solve(int r, int c) {
@@ -109,12 +100,13 @@ public class SudokuBacktracker implements SudokuSolver {
 		}
 		
 		boolean b = false;
-		if (preKnown[r][c] == 0) {
+		if (numbers[r][c] == 0) {
 			for (int nbr = 1; nbr < size + 1; nbr++) {
 				if (isValid(r, c, nbr)) {
 					numbers[r][c] = nbr;
 					b = solve(nextRow, nextCol);
 					if (!b) numbers[r][c] = 0;
+					else break;
 				}
 			}
 		} else {
@@ -123,6 +115,19 @@ public class SudokuBacktracker implements SudokuSolver {
 		return b;
 	}
 
+	private int[][] copyMatrix(int[][] matrix){
+		if (matrix == null) return new int[size][size];
+		if (matrix.length != size && matrix[0].length != size) {
+			return new int[size][size];
+		}
+		int[][] copy = new int[size][size];
+		for (int r = 0; r < size; r++) {
+			for (int c = 0; c < size; c++) {
+				copy[r][c] = matrix[r][c];
+			}
+		}
+		return copy;
+	}
 	@Override
 	public void clear() {
 		numbers = new int[size][size];
@@ -130,12 +135,12 @@ public class SudokuBacktracker implements SudokuSolver {
 
 	@Override
 	public int[][] getMatrix() {
-		return numbers;
+		return copyMatrix(numbers);
 	}
 
 	@Override
 	public void setMatrix(int[][] nbrs) {
-		numbers = nbrs;
+		numbers = copyMatrix(nbrs);
 	}
 	
 	@Override

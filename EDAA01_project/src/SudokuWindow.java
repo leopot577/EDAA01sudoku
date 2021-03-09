@@ -23,9 +23,9 @@ public class SudokuWindow {
 	private JPanel btnPanel, gridPanel;
 	private JPanel[][] squarePanels;
 	private Border squareBorder, cellBorder, gridBorder;
-	private SudokuBacktracker b;
+	private SudokuSolver b;
 	
-	public SudokuWindow(SudokuBacktracker b) {
+	public SudokuWindow(SudokuSolver b) {
 		this.b = b;
 		this.size = b.getDimension();
 		grid = new JTextField[size][size];
@@ -67,7 +67,11 @@ public class SudokuWindow {
 						}
 					}
 					try {
-						b.setNumber(r, c, nbr);
+						if (nbr == 0) {
+							b.clearNumber(r, c);
+						} else {
+							b.setNumber(r, c, nbr);
+						}
 					} catch (IllegalArgumentException err2) {
 						nbr = 0;
 						grid[r][c].setText("");

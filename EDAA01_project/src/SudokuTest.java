@@ -49,7 +49,7 @@ class SudokuTest {
 		solver.setNumber(2, 1, 6);
 		solver.setNumber(3, 2, 7);
 		assertFalse(solver.solve());
-		solver.setNumber(3, 2, 0);
+		solver.clearNumber(3, 2);
 		assertTrue(solver.solve());
 	}
 
@@ -93,7 +93,31 @@ class SudokuTest {
 		// can't test Sting input in Junit with suduko backtracking
 		// solver.setNumber(4, 4, "a");
 		// fail("Should show IllegalArgumentException");
-
+	}
+	
+	@Test
+	void testIsValid() {
+		assertTrue(solver.isValid(0,0,0));
+	}
+	@Test
+	void testGetMatrix() {
+		int[][] i = solver.getMatrix();
+		i[0][0] = 3;
+		assertEquals(solver.getNumber(0, 0), 0);
+	}
+	@Test
+	void testSetup() {
+		solver = new SudokuBacktracker(-1);
+		assertTrue(solver.solve());
+		solver = new SudokuBacktracker(7);
+		assertTrue(solver.solve());
+	}
+	@Test
+	void testsetMatrix() {
+		int[][] i = new int[5][5];
+		solver.setMatrix(i);
+		solver.setNumber(0, 0, 5);
+		assertEquals(i[0][0], 0);
 	}
 
 }
